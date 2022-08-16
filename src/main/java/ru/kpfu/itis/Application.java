@@ -1,9 +1,8 @@
 package ru.kpfu.itis;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import org.jfree.chart.ChartUtilities;
+
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -81,7 +80,8 @@ public class Application {
 
         GraphicalInterface gui = new GraphicalInterface(points, hull);
 
-        gui.paint();
+        //gui.paint();
+
 
     }
 }

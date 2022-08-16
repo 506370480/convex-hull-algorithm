@@ -2,6 +2,7 @@ package ru.kpfu.itis;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
@@ -12,6 +13,11 @@ import org.jfree.data.xy.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,6 +44,16 @@ public class GraphicalInterface {
         collection = getXYSeriesCollection();
         chart = getChart();
         setUp();
+        try {
+            OutputStream out = new FileOutputStream("chart.jpg");
+            ChartUtilities.writeChartAsPNG(out,
+                    chart,
+                    700,
+                    500);
+
+        } catch (IOException ex) {
+            System.out.println(ex.toString());
+        }
     }
 
     private XYSeries[] getXySeries() {
@@ -90,17 +106,19 @@ public class GraphicalInterface {
 
     private JFreeChart getChart() {
 
-        return ChartFactory.createXYLineChart("A Hull", "X", "Y", collection,
+        return ChartFactory.createXYLineChart("", "经度", "维度", collection,
                 PlotOrientation.VERTICAL, false, false, false);
     }
 
     private void setUp() {
 
         XYPlot plot = chart.getXYPlot();
-
         plot.setBackgroundPaint(Color.WHITE);
 
+
+
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+
 
         for (int i = 0; i < xySeries.length; i++) {
             renderer.setSeriesPaint(i, Color.red);
@@ -116,8 +134,12 @@ public class GraphicalInterface {
         rangeAxis.setAutoRange(true);
         rangeAxis.setAutoRangeIncludesZero(false);
 
-        plot.setRangeGridlinePaint(Color.black);
-        plot.setDomainGridlinePaint(Color.black);
+        DecimalFormat format = new DecimalFormat("0.0");
+
+        rangeAxis.setNumberFormatOverride(format);
+
+        //plot.setRangeGridlinePaint(Color.black);
+        //plot.setDomainGridlinePaint(Color.black);
 
 
         final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
@@ -125,6 +147,11 @@ public class GraphicalInterface {
         xAxis.setAutoRange(true);
         xAxis.setAutoRangeIncludesZero(false);
 
+        xAxis.setNumberFormatOverride(format);
+        rangeAxis.setTickLabelFont(new Font("宋体",Font.BOLD,16));//设置y轴坐标上的字体
+        rangeAxis.setLabelFont(new Font("宋体",Font.BOLD,20));//设置y轴坐标上的标题的字体
+        xAxis.setTickLabelFont(new Font("宋体",Font.BOLD,16));//设置x轴坐标上的字体
+        xAxis.setLabelFont(new Font("宋体",Font.BOLD,20));//设置x轴上的标题的字体
     }
 
     public void paint() {
@@ -132,10 +159,12 @@ public class GraphicalInterface {
         if (hull.size() == 0) {
             return;
         }
+        ChartPanel chartPanel = new ChartPanel(chart);
+
 
         JFrame frame = new JFrame("Convex Hull - Graham Algorithm");
 
-        frame.getContentPane().add(new ChartPanel(chart));
+        frame.getContentPane().add(chartPanel);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -144,5 +173,17 @@ public class GraphicalInterface {
         frame.setSize(700, 500);
 
         frame.setVisible(true);
+
+        try {
+            OutputStream out = new FileOutputStream("chart.jpg");
+            ChartUtilities.writeChartAsPNG(out,
+                    chart,
+                    chartPanel.getWidth(),
+                    chartPanel.getHeight());
+
+        } catch (IOException ex) {
+            System.out.println(ex.toString());
+        }
+
     }
 }
